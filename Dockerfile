@@ -25,9 +25,6 @@ RUN chown node:node -R /usr/local/bin/
 # https://github.com/puppeteer/puppeteer/issues/3451#issuecomment-523961368
 RUN echo 'kernel.unprivileged_userns_clone=1' > /etc/sysctl.d/userns.conf
 
-RUN npm i -g screenshoteer
-
-
 RUN mkdir -p /usr/src/screenshoteer
 # RUN mkdir -p /usr/src/screenshoteer/ScreenVOL
 
@@ -44,6 +41,8 @@ COPY . .
 
 EXPOSE 3000
 USER node
+
+RUN npm i -g screenshoteer
 
 # VOLUME ["/usr/src/garie-plugin/ScreenVOL"]
 
