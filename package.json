@@ -1,0 +1,32 @@
+{
+  "name": "screenshoteer-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": {
+      "name": "Iulian Petchesi",
+      "email": "iulian.petchesi@eaudeweb.ro"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=8"
+  },
+  "keywords": [
+    ""
+  ],
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/eea/eea.docker.screenshoteer.git"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+      "body-parser": "^1.18.3",
+      "express": "^4.16.3",
+      "fs-extra": "^7.0.0",
+      "sleep-promise": "8.0.1",
+      "dateformat": "*",
+      "underscore": "*",
+      "screenshoteer": "*"
+  }
+}

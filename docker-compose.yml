@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  screenshot:
+    # image:
+    build: .
+    environment:
+        TZ: 'Europe/Copenhagen'
+    volumes:
+      - ./tmpScreens:/tmpScreens
+    ports:
+      - "3000:3000"
+    cap_add:
+      - SYS_ADMIN
+    # just run the container doing nothing
+    # entrypoint: ["sh", "-c", "sleep infinity"]

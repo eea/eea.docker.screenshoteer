@@ -22,10 +22,29 @@ RUN apt-get install -yyq fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg f
 RUN chown node:node -R /usr/local/lib/node_modules/
 RUN chown node:node -R /usr/local/bin/
 
-
 # https://github.com/puppeteer/puppeteer/issues/3451#issuecomment-523961368
 RUN echo 'kernel.unprivileged_userns_clone=1' > /etc/sysctl.d/userns.conf
 
+# RUN npm i -g screenshoteer
+
+
+RUN mkdir -p /usr/src/screenshoteer
+# RUN mkdir -p /usr/src/screenshoteer/ScreenVOL
+
+WORKDIR /usr/src/screenshoteer
+
+COPY package.json .
+
+RUN cd /usr/src/screenshoteer && npm install
+
+RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64.deb && \
+    dpkg -i dumb-init_*.deb
+
+COPY . .
+
+EXPOSE 3000
 USER node
 
-RUN npm i -g screenshoteer
+# VOLUME ["/usr/src/garie-plugin/ScreenVOL"]
+
+CMD ["/usr/bin/dumb-init", "npm", "start"]
