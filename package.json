@@ -26,7 +26,6 @@
       "fs-extra": "^7.0.0",
       "sleep-promise": "8.0.1",
       "dateformat": "*",
-      "underscore": "*",
-      "screenshoteer": "*"
+      "underscore": "*"
   }
 }
