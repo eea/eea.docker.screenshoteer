@@ -26,6 +26,8 @@
       "fs-extra": "^7.0.0",
       "sleep-promise": "8.0.1",
       "dateformat": "*",
-      "underscore": "*"
+      "nodemon": "*",
+      "underscore": "*",
+      "screenshoteer": "https://github.com/eea/screenshoteer.git#master"
   }
 }

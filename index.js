@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const screenshoteer = require('screenshoteer')
 var routes = require('./routes');
 
 // app.use(function forceSSL(req, res, next) {
@@ -18,7 +19,8 @@ if (process.env.ENV !== 'test') {
   const server = app.listen(PORT, async () => {
     console.log('Application listening on port 3000');
     try{
-      // await main();
+      await screenshoteer({'url': 'https://www.eea.europa.eu/', 'file': '/tmpScreens/test-screen-3.jpg', 'w': 1920, 'h': 1080, 'fullpage': true})
+      // debugger;
     }
     catch(err){
       console.log(err);

@@ -4,6 +4,8 @@ FROM node:8
 
 RUN apt-get update
 
+
+
 # for https
 RUN apt-get install -yyq ca-certificates
 
@@ -18,6 +20,10 @@ RUN apt-get install -yyq fonts-liberation libgl1-mesa-dri chromium-l10n
 
 # fonts
 RUN apt-get install -yyq fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf
+
+
+
+
 
 RUN chown node:node -R /usr/local/lib/node_modules/
 RUN chown node:node -R /usr/local/bin/
@@ -41,8 +47,6 @@ COPY . .
 
 EXPOSE 3000
 USER node
-
-RUN npm i -g screenshoteer
 
 # VOLUME ["/usr/src/garie-plugin/ScreenVOL"]
 
