@@ -19,7 +19,7 @@ if (process.env.ENV !== 'test') {
   const server = app.listen(PORT, async () => {
     console.log('Application listening on port 3000');
     try{
-      await screenshoteer({'url': 'https://www.eea.europa.eu/', 'file': '/tmpScreens/test-screen-3.jpg', 'w': 1920, 'h': 1080, 'fullpage': true})
+      // await screenshoteer({'url': 'https://www.eea.europa.eu/', 'file': '/tmpScreens/test-screen-test.jpg', 'w': 1920, 'h': 1080, 'fullpage': true})
       // debugger;
     }
     catch(err){

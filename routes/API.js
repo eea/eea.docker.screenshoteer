@@ -1,36 +1,52 @@
-// var commands = require('../builtinCommands');
 var _ = require('underscore');
+const fs = require('fs-extra')
+const getenv = require('getenv');
+const nconf = require('nconf')
+const screenshoteer = require('screenshoteer')
+var good_arguments = ['url', 'w', 'h', 'emulate', 'fullpage', 'pdf', 'waitfor', 'waitforselector', 'auth', 'no', 'click', 'file']
+var location = getenv.string('VOLUME')
 
-exports.create_image = function(req, res){
-    console.log("Test CREATE IMAGE API");
-    // var options = {}
-    // options = _.extend(options, global.API_settings.indexing);
-    // options.API_callback = function(rsp){
-    //     res.send(rsp);
-    // }
-    // commands.create_index(options)
+exports.create_image = async function(req, res){
+    query = req.query;
+    keys = Object.keys(query);
+    for (i=0; i<keys.length;i++) {
+        if (!good_arguments.includes(keys[i])) {
+            console.log(keys[i]);
+            delete req.query[keys[i]];
+        }
+    }
+    await screenshoteer(req.query);
+    return;
 }
 
 exports.invalidate_cache_for_url = function(req, res){
     console.log("Test INVALIDATE CACHE FOR URL API");
-    // var options = {}
-    // options.API_callback = function(rsp){
-    //     response.send(rsp);
-    // }
-    // commands.api_switch(options)
+    debugger;
 }
 
-exports.retrieve_image_for_url = function(req, res){
-    console.log("Test RETRIEVE IMAGE FOR URL API");
-    // if (req.query.url !== undefined){
-    //     var options = {update_from_url:req.query.url}
-    //     options = _.extend(options, global.API_settings.indexing);
-    //     options.API_callback = function(rsp){
-    //         res.send(rsp);
-    //     }
-    //     commands.create_index(options)
-    // }
-    // else {
-    //     res.send({error:"No url specified"});
-    // }
+exports.retrieve_image_for_url = async function(req, res){
+    if (req.query.url === undefined) {
+        res.status(404).send('No url specified');
+        return;
+    }
+    url = req.query.url.split('://')[1];
+    file = location + url + '.jpg';
+    req.query.file = file;
+
+    try {
+        var file_exists = fs.pathExistsSync(file);
+        if (file_exists) {
+            res.setHeader('Content-Type', 'image/jpg');
+            fs.createReadStream(file).pipe(res);
+        }
+        else {
+            await exports.create_image(req, res);
+            res.setHeader('Content-Type', 'image/jpg');
+            fs.createReadStream(file).pipe(res);
+        }
+    }
+    catch(err) {
+        console.log(err);
+    }
+    return;
 }
