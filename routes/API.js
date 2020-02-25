@@ -15,7 +15,12 @@ exports.create_image = async function(req, res){
             delete req.query[keys[i]];
         }
     }
-    await screenshoteer(req.query);
+    try {
+        await screenshoteer(req.query);
+    }
+    catch(err) {
+        throw(err);
+    }
     return;
 }
 
@@ -47,6 +52,7 @@ exports.retrieve_image_for_url = async function(req, res){
     }
     catch(err) {
         console.log(err);
+        res.status(400).send(err.toString());
     }
     return;
 }
