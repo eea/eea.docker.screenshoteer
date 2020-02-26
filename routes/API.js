@@ -35,7 +35,7 @@ exports.invalidate_cache_for_url = async function(req, res){
     var count = 0;
     var url = req.query.url.split('://')[1];
     try {
-        glob(url + "*.jpg", options, function (er, files) {
+        glob(url + "*.*", options, function (er, files) {
             if (files.length === 0) {
                 res.status(400).send("The url didn't match any file.");
             }
@@ -65,18 +65,24 @@ exports.retrieve_image_for_url = async function(req, res){
         return;
     }
     url = req.query.url.split('://')[1];
-    file = location + url + '.jpg';
+
+    if (req.query.pdf !== undefined) {
+        res.setHeader('Content-Type', 'application/pdf');
+        file = location + url + '.pdf';
+    }
+    else {
+        res.setHeader('Content-Type', 'image/jpg');
+        file = location + url + '.jpg';
+    }
     req.query.file = file;
 
     try {
         var file_exists = fs.pathExistsSync(file);
         if (file_exists) {
-            res.setHeader('Content-Type', 'image/jpg');
             fs.createReadStream(file).pipe(res);
         }
         else {
             await exports.create_image(req, res);
-            res.setHeader('Content-Type', 'image/jpg');
             fs.createReadStream(file).pipe(res);
         }
     }
