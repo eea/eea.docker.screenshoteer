@@ -30,6 +30,7 @@
       "nconf": "*",
       "nodemon": "*",
       "underscore": "*",
+      "glob": "*",
       "screenshoteer": "https://github.com/eea/screenshoteer.git#master"
   }
 }
