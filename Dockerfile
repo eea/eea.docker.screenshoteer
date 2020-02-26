@@ -35,9 +35,6 @@ COPY package.json .
 
 RUN cd /usr/src/screenshoteer && npm install
 
-RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64.deb && \
-    dpkg -i dumb-init_*.deb
-
 COPY . .
 
 EXPOSE 3000
@@ -45,4 +42,4 @@ USER node
 
 # VOLUME ["/usr/src/garie-plugin/ScreenVOL"]
 
-CMD ["/usr/bin/dumb-init", "npm", "start"]
+CMD ["npm", "start"]
