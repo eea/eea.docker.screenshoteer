@@ -5,18 +5,10 @@ const nconf = require('nconf')
 const screenshoteer = require('screenshoteer')
 var glob = require("glob")
 var util = require('util')
-var good_arguments = ['url', 'w', 'h', 'emulate', 'fullpage', 'pdf', 'waitfor', 'waitforselector', 'auth', 'no', 'click', 'file']
+var good_arguments = ['url', 'w', 'h', 'emulate', 'fullPage', 'pdf', 'waitfor', 'waitforselector', 'auth', 'no', 'click', 'file']
 var location = getenv.string('VOLUME')
 
 exports.create_image = async function(req, res){
-    query = req.query;
-    keys = Object.keys(query);
-    for (i=0; i<keys.length;i++) {
-        if (!good_arguments.includes(keys[i])) {
-            console.log(keys[i]);
-            delete req.query[keys[i]];
-        }
-    }
     try {
         await screenshoteer(req.query);
     }
@@ -31,11 +23,12 @@ exports.invalidate_cache_for_url = async function(req, res){
         res.status(404).send('No url specified');
         return;
     }
-    var options = {cwd: location}
+    var options = {cwd: location};
     var count = 0;
     var url = req.query.url.split('://')[1];
+    var wildcard = "*" + url + "*.*";
     try {
-        glob(url + "*.*", options, function (er, files) {
+        glob(wildcard, options, function (er, files) {
             if (files.length === 0) {
                 res.status(400).send("The url didn't match any file.");
             }
@@ -64,18 +57,32 @@ exports.retrieve_image_for_url = async function(req, res){
         res.status(404).send('No url specified');
         return;
     }
-    url = req.query.url.split('://')[1];
 
+    keys = Object.keys(req.query);
+    var file = location;
+    for (i=0; i<keys.length;i++) {
+        if (!good_arguments.includes(keys[i])) {
+            console.log(keys[i]);
+            delete req.query[keys[i]];
+        }
+        if (keys[i] === "url") {
+            url = req.query.url.split("://")[1];
+            file += keys[i] + url;
+        }
+        else {
+            file += keys[i] + req.query[keys[i]];
+        }
+    }
     if (req.query.pdf !== undefined) {
         res.setHeader('Content-Type', 'application/pdf');
-        file = location + url + '.pdf';
+        file += '.pdf';
     }
     else {
         res.setHeader('Content-Type', 'image/jpg');
-        file = location + url + '.jpg';
+        file += '.jpg';
     }
-    req.query.file = file;
 
+    req.query.file = file;
     try {
         var file_exists = fs.pathExistsSync(file);
         if (file_exists) {
