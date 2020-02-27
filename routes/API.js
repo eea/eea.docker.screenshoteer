@@ -23,9 +23,18 @@ exports.invalidate_cache_for_url = async function(req, res){
         res.status(404).send('No url specified');
         return;
     }
+    if (req.query.url.endsWith('/')) {
+        req.query.url = req.query.url.slice(0, -1);
+    }
+    if (req.query.url.startsWith('http')) {
+        url = req.query.url.split("://")[1];
+    }
+    else {
+        url = req.query.url;
+    }
+
     var options = {cwd: location};
     var count = 0;
-    var url = req.query.url.split('://')[1];
     var wildcard = "*" + url + "*.*";
     try {
         glob(wildcard, options, function (er, files) {
@@ -60,6 +69,13 @@ exports.retrieve_image_for_url = async function(req, res){
     if (req.query.url.endsWith('/')) {
         req.query.url = req.query.url.slice(0, -1);
     }
+    if (req.query.url.startsWith('http')) {
+        url = req.query.url.split("://")[1];
+    }
+    else {
+        url = req.query.url;
+        req.query.url = "http://" + req.query.url;
+    }
 
     keys = Object.keys(req.query);
     var file = location;
@@ -69,7 +85,6 @@ exports.retrieve_image_for_url = async function(req, res){
             delete req.query[keys[i]];
         }
         if (keys[i] === "url") {
-            url = req.query.url.split("://")[1];
             file += keys[i] + url;
         }
         else {
