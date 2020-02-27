@@ -57,6 +57,9 @@ exports.retrieve_image_for_url = async function(req, res){
         res.status(404).send('No url specified');
         return;
     }
+    if (req.query.url.endsWith('/')) {
+        req.query.url = req.query.url.slice(0, -1);
+    }
 
     keys = Object.keys(req.query);
     var file = location;
