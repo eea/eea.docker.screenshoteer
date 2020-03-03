@@ -32,6 +32,9 @@ exports.invalidate_cache_for_url = async function(req, res){
     else {
         url = req.query.url;
     }
+    while(url.indexOf('/') !== -1) {
+        url = url.replace('/', '-');
+    }
 
     var options = {cwd: location};
     var count = 0;
@@ -75,6 +78,10 @@ exports.retrieve_image_for_url = async function(req, res){
     else {
         url = req.query.url;
         req.query.url = "http://" + req.query.url;
+    }
+
+    while(url.indexOf('/') !== -1) {
+        url = url.replace('/', '-');
     }
 
     keys = Object.keys(req.query);
