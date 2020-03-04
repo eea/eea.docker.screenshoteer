@@ -43,6 +43,7 @@ exports.invalidate_cache_for_url = async function(req, res){
         glob(wildcard, options, function (er, files) {
             if (files.length === 0) {
                 res.status(400).send("The url didn't match any file.");
+                return;
             }
             for (i=0; i<files.length; i++) {
                 fs.remove(location + files[i])
@@ -62,6 +63,7 @@ exports.invalidate_cache_for_url = async function(req, res){
         console.log(err);
         res.status(400).send(err.toString());
     }
+    return;
 }
 
 exports.retrieve_image_for_url = async function(req, res){
