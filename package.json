@@ -31,6 +31,7 @@
       "nodemon": "*",
       "underscore": "*",
       "glob": "*",
+      "puppeteer-cluster": "*",
       "screenshoteer": "https://github.com/eea/screenshoteer.git#master"
   }
 }

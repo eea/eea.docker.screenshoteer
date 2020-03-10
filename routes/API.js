@@ -8,9 +8,57 @@ var util = require('util')
 var good_arguments = ['url', 'w', 'h', 'emulate', 'fullPage', 'pdf', 'waitfor', 'waitforselector', 'auth', 'no', 'click', 'file']
 var location = getenv.string('VOLUME')
 
+const { Cluster } = require('puppeteer-cluster');
+global.cluster = undefined;
+
+async function init_cluster () {
+  global.cluster = await Cluster.launch({
+    concurrency: Cluster.CONCURRENCY_CONTEXT,
+    maxConcurrency: 5,
+    puppeteerOptions: {headless: true, timeout: 60000},
+    timeout: 60000,
+  });
+  await global.cluster.task(async ({ page, data:req }) => {
+      await screenshoteer(page, req.query);
+  });
+
+  // Event handler to be called in case of problems
+  global.cluster.on('taskerror', (err, data) => {
+    console.log(`Error crawling ${data}: ${err.message}`);
+  });
+};
+exports.initialize_cluster = init_cluster;
+
+exports.recreate_cluster = async function(req, res) {
+    if (req.query.interval) {
+        var interval = Number(req.query.interval);
+    }
+    else {
+        var interval = 300000;
+    }
+    if (global.cluster.jobQueue.list.length === 0) {
+        await global.cluster.idle();
+        await global.cluster.close();
+        res.status(200).send("Finished recreating cluster");
+    }
+    else {
+        const retry = (fn, ms) => new Promise(resolve => {
+          fn()
+          .then(resolve)
+          .catch(() => {
+            setTimeout(() => {
+              console.log('retrying recreate_cluster...');
+              retry(fn, ms).then(resolve);
+            }, ms);
+          })
+        });
+        retry(() => exports.recreate_cluster(req, res), interval);
+    }
+}
+
 exports.create_image = async function(req, res){
     try {
-        await screenshoteer(req.query);
+        await global.cluster.execute(req);
     }
     catch(err) {
         throw(err);
@@ -67,6 +115,9 @@ exports.invalidate_cache_for_url = async function(req, res){
 }
 
 exports.retrieve_image_for_url = async function(req, res){
+    if (global.cluster === undefined) {
+        await init_cluster();
+    }
     if (req.query.url === undefined) {
         res.status(404).send('No url specified');
         return;
