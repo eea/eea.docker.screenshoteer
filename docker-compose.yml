@@ -4,11 +4,11 @@ services:
   screenshot:
     image: eeacms/screenshoteer:latest
     environment:
-        VOLUME: '/tmpScreens/'
+        VOLUME: '/StorageLocation/'
         TZ: 'Europe/Copenhagen'
         # DEBUG: 'puppeteer:* env DEBUG_COLORS=true node script.js 2>&1 | grep -v "Network"'
     volumes:
-      - ./tmpScreens:/tmpScreens
+      - ./StorageLocation:/StorageLocation
     ports:
       - "3000:3000"
     cap_add:
