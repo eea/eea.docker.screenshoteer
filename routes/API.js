@@ -30,6 +30,13 @@ async function init_cluster () {
 exports.initialize_cluster = init_cluster;
 
 exports.recreate_cluster = async function(req, res) {
+    if (req.query.force) {
+        await global.cluster.idle();
+        await global.cluster.close();
+        await init_cluster();
+        res.status(200).send("Finished recreating cluster");
+        return;
+    }
     if (req.query.interval) {
         var interval = Number(req.query.interval);
     }
@@ -39,6 +46,7 @@ exports.recreate_cluster = async function(req, res) {
     if (global.cluster.jobQueue.list.length === 0) {
         await global.cluster.idle();
         await global.cluster.close();
+        await init_cluster();
         res.status(200).send("Finished recreating cluster");
     }
     else {
@@ -54,6 +62,7 @@ exports.recreate_cluster = async function(req, res) {
         });
         retry(() => exports.recreate_cluster(req, res), interval);
     }
+    return;
 }
 
 exports.create_image = async function(req, res){
