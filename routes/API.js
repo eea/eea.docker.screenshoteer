@@ -17,7 +17,7 @@ async function init_cluster () {
     maxConcurrency: 5,
     puppeteerOptions: {headless: true, timeout: 60000},
     timeout: 60000,
-    monitor: true,
+    monitor: false,
   });
   await global.cluster.task(async ({ page, data:req }) => {
       await screenshoteer(page, req.query);
