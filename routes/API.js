@@ -189,6 +189,14 @@ exports.retrieve_image_for_url = async function(req, res){
 }
 
 exports.healthcheck = function(req, res){
-    res.status(200).send('OK');
+    try {
+        var file = location + 'testfile.txt';
+        fs.closeSync(fs.openSync(file, 'w'));
+        res.status(200).send('OK');
+    }
+    catch(err) {
+        console.log(err);
+        res.status(500).send(err.toString());
+    }
     return;
 }

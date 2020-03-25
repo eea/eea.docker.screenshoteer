@@ -7,6 +7,7 @@
 <h4>Installation </h4>
 
 <p><a href="https://hub.docker.com/r/eeacms/screenshoteer">Docker image</a>. </p>
+<p><a href="https://github.com/eea/eea.docker.screenshoteer/blob/master/docker-compose.yml">Docker Compose</a>. </p>
 
 <p>
 <h4>API options:</h4>
@@ -18,6 +19,8 @@
 /API/v1/recreate_cluster?params=params - recreate the puppeteer-cluster, use force=true in order to force recreation
 
 /API/v1/create_image?params=params - used mainly by retrieve_image_for_url, not for public use
+
+/API/v1/healthcheck - used mainly by rancher, returns code 200 if everything checks out
 <p>
 
 <p>
