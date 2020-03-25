@@ -14,6 +14,7 @@ app.get('/API/v1/create_image', routes.API.create_image);
 app.get('/API/v1/invalidate_cache_for_url', routes.API.invalidate_cache_for_url);
 app.get('/API/v1/retrieve_image_for_url', routes.API.retrieve_image_for_url);
 app.get('/API/v1/recreate_cluster', routes.API.recreate_cluster);
+app.get('/API/v1/healthcheck', routes.API.healthcheck);
 
 const PORT = process.env.PORT || 3000;
 if (process.env.ENV !== 'test') {

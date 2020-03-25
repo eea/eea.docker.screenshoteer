@@ -17,6 +17,7 @@ async function init_cluster () {
     maxConcurrency: 5,
     puppeteerOptions: {headless: true, timeout: 60000},
     timeout: 60000,
+    monitor: true,
   });
   await global.cluster.task(async ({ page, data:req }) => {
       await screenshoteer(page, req.query);
@@ -184,5 +185,10 @@ exports.retrieve_image_for_url = async function(req, res){
         console.log(err);
         res.status(400).send(err.toString());
     }
+    return;
+}
+
+exports.healthcheck = function(req, res){
+    res.status(200).send('OK');
     return;
 }
