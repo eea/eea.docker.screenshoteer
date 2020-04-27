@@ -1,12 +1,13 @@
 var _ = require('underscore');
 const fs = require('fs-extra')
 const getenv = require('getenv');
-const nconf = require('nconf')
-const screenshoteer = require('screenshoteer')
-var glob = require("glob")
-var util = require('util')
-var good_arguments = ['url', 'w', 'h', 'emulate', 'fullPage', 'pdf', 'waitfor', 'waitforselector', 'auth', 'no', 'click', 'file']
-var location = getenv.string('VOLUME')
+const nconf = require('nconf');
+const screenshoteer = require('screenshoteer');
+var glob = require("glob");
+var util = require('util');
+var crypto = require('crypto');
+var good_arguments = ['url', 'w', 'h', 'emulate', 'fullPage', 'pdf', 'waitfor', 'waitforselector', 'auth', 'no', 'click', 'file'];
+var location = getenv.string('VOLUME');
 
 const { Cluster } = require('puppeteer-cluster');
 global.cluster = undefined;
@@ -90,13 +91,16 @@ exports.invalidate_cache_for_url = async function(req, res){
     else {
         url = req.query.url;
     }
+    var url_to_hash = url.split('/')[0];
     while(url.indexOf('/') !== -1) {
         url = url.replace('/', '-');
     }
+    // hash md5 url + hash md5 params
+    var hashed_url = crypto.createHash('md5').update(url_to_hash).digest("hex");
 
     var options = {cwd: location};
     var count = 0;
-    var wildcard = "*" + url + "*.*";
+    var wildcard = "*" + hashed_url + "*.*";
     try {
         glob(wildcard, options, function (er, files) {
             if (files.length === 0) {
@@ -143,33 +147,45 @@ exports.retrieve_image_for_url = async function(req, res){
         req.query.url = "http://" + req.query.url;
     }
 
+    var url_to_hash = url.split('/')[0];
     while(url.indexOf('/') !== -1) {
         url = url.replace('/', '-');
     }
 
     keys = Object.keys(req.query);
     var file = location;
+    var params_to_hash = '';
     for (i=0; i<keys.length;i++) {
+        if (keys[i] === "fullpage") {
+            keys[i] = "fullPage";
+        }
         if (!good_arguments.includes(keys[i])) {
             console.log(keys[i]);
             delete req.query[keys[i]];
         }
         if (keys[i] === "url") {
-            file += keys[i] + url;
+            params_to_hash += keys[i] + url.replace(url_to_hash, '');
         }
         else {
-            file += keys[i] + req.query[keys[i]];
+            params_to_hash += keys[i] + req.query[keys[i]];
         }
     }
+
+    // hash md5 url + hash md5 params
+    var hashed_url = crypto.createHash('md5').update(url_to_hash).digest("hex");
+    var hashed_params = crypto.createHash('md5').update(params_to_hash).digest("hex");
+    var hashed_filename = hashed_url + hashed_params;
+
     if (req.query.pdf !== undefined) {
         res.setHeader('Content-Type', 'application/pdf');
-        file += '.pdf';
+        hashed_filename += '.pdf';
     }
     else {
         res.setHeader('Content-Type', 'image/jpg');
-        file += '.jpg';
+        hashed_filename += '.jpg';
     }
 
+    file += hashed_filename;
     req.query.file = file;
     try {
         var file_exists = fs.pathExistsSync(file);
